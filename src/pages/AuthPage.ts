@@ -42,9 +42,9 @@ export class AuthPage {
 
   constructor() {
     this.confirmField = this.field('Повторите пароль', this.confirm);
-    const form = el(
-      'form.auth__form',
-      { novalidate: true },
+    const form = tag(
+      'form',
+      'auth__form',
       this.title,
       el('p.auth__lead', 'Слушайте треки и собирайте избранное на любом устройстве'),
       this.field('Имя пользователя', this.username),
@@ -61,6 +61,8 @@ export class AuthPage {
       form,
     );
 
+    // Проверку полей делаем сами, чтобы показывать понятные сообщения на русском
+    form.noValidate = true;
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       void this.onSubmit();

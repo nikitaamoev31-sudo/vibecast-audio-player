@@ -1,7 +1,6 @@
 import { el } from 'redom';
 import { tag } from '../utils/dom';
 import { library } from '../core/library';
-import { player } from '../core/player';
 import { session } from '../core/session';
 import { durationToSeconds, formatTime } from '../utils/format';
 
@@ -33,11 +32,7 @@ export class ProfilePage {
       ),
     );
 
-    logout.addEventListener('click', () => {
-      player.stop();
-      library.reset();
-      session.end();
-    });
+    logout.addEventListener('click', () => session.end());
   }
 
   render(): void {

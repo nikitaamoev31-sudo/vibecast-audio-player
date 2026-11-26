@@ -44,7 +44,11 @@ export class App {
     });
     router.on('change', () => void this.renderRoute());
     session.on('change', (username) => {
-      if (!username) router.go('login');
+      if (username) return;
+      // Выход или истёкший токен: сбрасываем кэш и плеер, чтобы следующий пользователь не увидел чужое избранное
+      player.stop();
+      library.reset();
+      router.go('login');
     });
     library.on('favorites', () => {
       // В избранном снятый трек должен исчезнуть, в общем списке — только смениться сердечко
@@ -124,8 +128,11 @@ export class App {
   private bindHotkeys(): void {
     document.addEventListener('keydown', (event) => {
       const target = event.target as HTMLElement;
-      if (target.closest('input, textarea, select, button, a, [role="dialog"]') || !player.current) return;
+      // В полях ввода и модальном окне клавиши работают как обычно
+      if (target.closest('input, textarea, select, [role="dialog"]') || !player.current) return;
       if (event.code === 'Space') {
+        // Пробел на кнопке или ссылке сам нажимает её — не перехватываем
+        if (target.closest('button, a')) return;
         event.preventDefault();
         player.toggle();
       } else if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {

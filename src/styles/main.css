@@ -348,7 +348,7 @@ a {
 .tracks__head,
 .track {
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) 140px 40px 60px 40px;
+  grid-template-columns: 40px minmax(0, 1.25fr) minmax(0, 1fr) 140px 40px 60px 40px;
   align-items: center;
   column-gap: 16px;
 }
@@ -420,8 +420,15 @@ a {
   letter-spacing: 0.01em;
 }
 
+.track__album {
+  overflow: hidden;
+  font-size: 16px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .track__artist,
-.track__size,
+.track__added,
 .track__duration {
   font-size: 14px;
   color: var(--muted);
@@ -1034,11 +1041,11 @@ a {
 
   .tracks__head,
   .track {
-    grid-template-columns: 32px minmax(0, 1fr) 40px 50px 40px;
+    grid-template-columns: 32px minmax(0, 1.4fr) minmax(0, 1fr) 40px 50px 40px;
   }
 
-  .track__size,
-  .tracks__head-size {
+  .track__added,
+  .tracks__head-added {
     display: none;
   }
 
@@ -1160,6 +1167,8 @@ a {
 
   .tracks__head,
   .track__number,
+  .track__album,
+  .track__added,
   .track__duration,
   .pager {
     display: none;

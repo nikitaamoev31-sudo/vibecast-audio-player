@@ -5,7 +5,8 @@ import { icon } from './icons';
 import { openTrackCard } from './TrackCard';
 import { library } from '../core/library';
 import { player } from '../core/player';
-import { durationToSeconds, formatSize, formatTime } from '../utils/format';
+import { history } from '../core/history';
+import { durationToSeconds, formatAddedAt, formatTime } from '../utils/format';
 import type { Track } from '../types';
 
 export interface RowContext {
@@ -18,6 +19,7 @@ export class TrackRow {
   readonly el: HTMLElement;
   private readonly heart: HTMLButtonElement;
   private readonly number: HTMLElement;
+  private readonly added = el('span.track__added');
   private track: Track | null = null;
   private context: RowContext = { queue: [] };
 
@@ -59,6 +61,7 @@ export class TrackRow {
     this.heart.classList.toggle('track__heart--active', favorite);
     this.heart.setAttribute('aria-pressed', String(favorite));
     this.heart.setAttribute('aria-label', favorite ? 'Убрать из избранного' : 'Добавить в избранное');
+    this.added.textContent = formatAddedAt(history.addedAt(this.track.id, favorite));
 
     const current = player.current?.id === this.track.id;
     this.el.classList.toggle('track--current', current);
@@ -84,7 +87,9 @@ export class TrackRow {
         cover(track),
         el('div.track__info', el('span.track__title', track.title), el('span.track__artist', track.artist)),
       ),
-      el('span.track__size', formatSize(track.size_mb)),
+      // В API нет альбома: каждый трек выпущен синглом, поэтому альбом совпадает с названием
+      el('span.track__album', { title: track.title }, track.title),
+      this.added,
       this.heart,
       el('span.track__duration', formatTime(durationToSeconds(track.duration))),
       more,

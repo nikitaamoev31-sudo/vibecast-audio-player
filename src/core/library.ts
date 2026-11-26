@@ -1,5 +1,6 @@
 import { favoritesApi, tracksApi } from '../api';
 import { Emitter } from './emitter';
+import { history } from './history';
 import type { Track } from '../types';
 
 interface LibraryEvents {
@@ -21,6 +22,7 @@ class Library extends Emitter<LibraryEvents> {
       .then(([tracks, favorites]) => {
         this.tracks = tracks;
         this.favoriteIds = new Set(favorites.map((track) => track.id));
+        history.registerCatalog(tracks.map((track) => track.id), [...this.favoriteIds]);
         this.emit('favorites', this.favoriteIds);
       })
       .catch((error: unknown) => {
@@ -53,6 +55,7 @@ class Library extends Emitter<LibraryEvents> {
     const wasFavorite = this.favoriteIds.has(id);
     if (wasFavorite) this.favoriteIds.delete(id);
     else this.favoriteIds.add(id);
+    history.setFavorite(id, !wasFavorite);
     this.emit('favorites', this.favoriteIds);
 
     try {
@@ -60,6 +63,7 @@ class Library extends Emitter<LibraryEvents> {
     } catch (error) {
       if (wasFavorite) this.favoriteIds.add(id);
       else this.favoriteIds.delete(id);
+      history.setFavorite(id, wasFavorite);
       this.emit('favorites', this.favoriteIds);
       this.emit('error', error instanceof Error ? error.message : 'Не удалось обновить избранное');
     }
